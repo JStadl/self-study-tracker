@@ -33,7 +33,8 @@ Never edit `index.html` to special-case one course. If a course does not fit, fi
 7. **Keep `state.json` backward compatible.** If you add fields, old files without them must still load. Bump nothing; default missing fields in `norm()`.
 8. **Fill in `source`, `sourceUrl` and `license`** for every course you add, and do not use a provider's name or logo in the site title or branding.
 9. **Version the formats.** If you change what a course file may contain in a way old code would misread, raise `SCHEMA` in `index.html`, set `"schema"` in the course files that need it, and note it in `CHANGELOG.md`. Additive optional fields do not need a bump. Raise `VERSION` on any code change.
-10. **Read-only mode must stay read-only.** Visitors without a token must see no action buttons. `canEdit()` gates this.
+10. **Treat course files, `config.json` and `state.json` as untrusted text.** Every value from them goes through `esc()` at the point it is written into HTML, including values that look harmless (codes, labels, numbers). Links are checked with `safeUrl()` when a file loads. If you add a field, add it to the hostile course in `tests/smoke.js`. The owner's GitHub token is readable by any script on the page, so one unescaped value is a token leak.
+11. **Read-only mode must stay read-only.** Visitors without a token must see no action buttons. `canEdit()` gates this.
 
 ## Recipe: add a course
 

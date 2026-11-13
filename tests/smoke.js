@@ -119,6 +119,25 @@ const flushSaves = () => saves.splice(0).forEach(f => { try { f(); } catch (e) {
   } else {
     console.log("  skip flow checks: no course with both lectures and problem sets");
   }
+  /* hostile input: markup in every text field must come out escaped, and bad links and ids must be refused */
+  console.log("Hostile course files");
+  const X = '"><img src=x onerror=alert(1)>', N = win.__tracker.normCourse, base = () => ({ id: "evil", code: X, name: X, term: X, source: X, license: X, orderNote: X, letters: [[0, X]],
+    types: { odd: { mode: "tick", label: X, done: X, verb: X, short: X }, hard: { mode: "assess", label: X, open: X } },
+    links: [{ label: X, url: "https://example.org/a\"b" }], components: [{ key: "k", label: X, weight: 100 }],
+    items: [{ id: "evil-1", type: "odd", n: 1, title: X, short: X, url: "https://example.org/\"onmouseover=\"x" }, { id: "evil-2", type: "hard", title: X, short: X, url: "https://example.org/p", solutions: "https://example.org/s", component: "k" }] });
+  const refuses = (label, edit) => { const c = base(); c.id = "evil" + label.replace(/\W/g, ""); c.items.forEach((i, n) => { i.id = c.id + "-" + n; }); edit(c); let threw = false; try { N(c); } catch (e) { threw = true; } ok(threw, "refuses " + label); };
+  refuses("a javascript: link", c => { c.items[0].url = "javascript:alert(1)"; });
+  refuses("a data: solutions link", c => { c.items[1].solutions = "data:text/html,x"; });
+  refuses("a link with leading whitespace", c => { c.items[0].url = " javascript:alert(1)"; });
+  refuses("a non-http sourceUrl", c => { c.sourceUrl = "javascript:alert(1)"; });
+  refuses("markup in an item id", c => { c.items[0].id = 'a"><b>'; });
+  refuses("a non-numeric n", c => { c.items[0].n = "<b>"; });
+  win.__tracker.courses().push(N(base()));
+  T.state().items["evil-2"] = { submitted: new Date().toISOString(), score: 50 };
+  let leaked = [];
+  ["today", "timeline", "evil", "plan"].forEach(v => { go(v); if (/<img|onerror=alert\(1\)>|" ?onmouseover="x"/.test(out())) leaked.push(v); });
+  ok(leaked.length === 0, "hostile text is escaped in every view" + (leaked.length ? ": leaked in " + leaked.join(", ") : ""));
+  go("evil"); ok(/&lt;img src=x/.test(out()), "the hostile course did render (as text)");
   console.log(failed ? "\n" + failed + " check(s) failed" : "\nAll checks passed");
   process.exit(failed ? 1 : 0);
 })();
