@@ -1,0 +1,85 @@
+{
+ "schema": 1,
+ "id": "micro",
+ "code": "14.01",
+ "name": "Principles of Microeconomics",
+ "term": "Fall 2023",
+ "source": "MIT OpenCourseWare",
+ "sourceUrl": "https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/",
+ "license": "CC BY-NC-SA 4.0",
+ "pace": 5,
+ "links": [
+  {
+   "label": "Syllabus",
+   "url": "https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/pages/syllabus/"
+  },
+  {
+   "label": "Calendar",
+   "url": "https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/pages/calendar/"
+  },
+  {
+   "label": "Lecture handouts",
+   "url": "https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/lists/lecture-handouts/"
+  },
+  {
+   "label": "Lecture summaries",
+   "url": "https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/lists/lecture-summaries/"
+  }
+ ],
+ "components": [
+  {
+   "key": "pset",
+   "label": "Problem sets (best 7 of 8)",
+   "weight": 25,
+   "drop": 1
+  },
+  {
+   "key": "mid",
+   "label": "Midterm",
+   "weight": 25
+  },
+  {
+   "key": "final",
+   "label": "Final",
+   "weight": 50
+  }
+ ],
+ "items": [
+  {"id":"micro-l1","type":"lecture","n":1,"title":"Lecture 1: Introduction and Supply & Demand","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-1-introduction-to-principles-of-microeconomics-and-supply-demand/"},
+  {"id":"micro-l2","type":"lecture","n":2,"title":"Lecture 2: Preferences and Utility Functions","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-2-preferences-and-utility-function/"},
+  {"id":"micro-l3","type":"lecture","n":3,"title":"Lecture 3: Budget Constraints and Constrained Choice","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-3-budget-constraints-and-constrained-choice/"},
+  {"id":"micro-l4","type":"lecture","n":4,"title":"Lecture 4: Demand Curves and Income/Substitution Effects","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-4-demand-curves-and-incomesubstitution-effects/"},
+  {"id":"micro-l5","type":"lecture","n":5,"title":"Lecture 5: Production Theory","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-5-production-theory/"},
+  {"id":"micro-l6","type":"lecture","n":6,"title":"Lecture 6: Costs","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-6-costs/"},
+  {"id":"micro-l7","type":"lecture","n":7,"title":"Lecture 7: Competition I","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-7-competition-i/"},
+  {"id":"micro-p1","type":"pset","n":1,"title":"Problem Set 1","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset1_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset1sol_pdf/","component":"pset"},
+  {"id":"micro-l8","type":"lecture","n":8,"title":"Lecture 8: Competition II","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-8-competition-ii/"},
+  {"id":"micro-l9","type":"lecture","n":9,"title":"Lecture 9: Supply and Demand & Consumer/Producer Surplus","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-9-supply-and-demand-consumerproducer-surplus/"},
+  {"id":"micro-p2","type":"pset","n":2,"title":"Problem Set 2","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset2_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset2sol_pdf/","component":"pset"},
+  {"id":"micro-l10","type":"lecture","n":10,"title":"Lecture 10: Welfare Economics","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-10-welfare-economics/"},
+  {"id":"micro-p3","type":"pset","n":3,"title":"Problem Set 3","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset3_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset3sol_pdf/","component":"pset"},
+  {"id":"micro-l11","type":"lecture","n":11,"title":"Lecture 11: Monopoly I","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-11-monopoly-i/"},
+  {"id":"micro-l12","type":"lecture","n":12,"title":"Lecture 12: Monopoly II","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-12-monopoly-ii/"},
+  {"id":"micro-p4","type":"pset","n":4,"title":"Problem Set 4","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset4_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset4sol_pdf/","component":"pset"},
+  {"id":"micro-l13","type":"lecture","n":13,"title":"Lecture 13: Oligopoly I","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-13-oligopoly-i/"},
+  {"id":"micro-mid","type":"exam","title":"Midterm Exam","short":"Mid","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_midterm_pdf/","solutions":null,"solutionsInline":true,"component":"mid","minutes":120,"units":2},
+  {"id":"micro-l14","type":"lecture","n":14,"title":"Lecture 14: Oligopoly II","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-14-oligopoly-ii/"},
+  {"id":"micro-l15","type":"lecture","n":15,"title":"Lecture 15: Input Markets I: Labor Market","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-15-input-markets-ilabor-market/"},
+  {"id":"micro-l16","type":"lecture","n":16,"title":"Lecture 16: Input Markets II: Labor and Capital","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-16-input-markets-iilabor-and-capital/"},
+  {"id":"micro-p5","type":"pset","n":5,"title":"Problem Set 5","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset5_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset5sol_pdf/","component":"pset"},
+  {"id":"micro-l17","type":"lecture","n":17,"title":"Lecture 17: Making Choices over Time","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-17-making-choices-over-time/"},
+  {"id":"micro-l18","type":"lecture","n":18,"title":"Lecture 18: Introduction to Trade","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-18-introduction-to-trade/"},
+  {"id":"micro-l19","type":"lecture","n":19,"title":"Lecture 19: International Trade: Welfare and Policy","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-19-international-trade-welfare-and-policy/"},
+  {"id":"micro-l20","type":"lecture","n":20,"title":"Lecture 20: Uncertainty","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-20-uncertainty/"},
+  {"id":"micro-p6","type":"pset","n":6,"title":"Problem Set 6","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset6_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset6sol_pdf/","component":"pset"},
+  {"id":"micro-l21","type":"lecture","n":21,"title":"Lecture 21: Social Insurance","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-21-social-insurance/"},
+  {"id":"micro-l22","type":"lecture","n":22,"title":"Lecture 22: Efficiency and Equity","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-22-efficiency-and-equity/"},
+  {"id":"micro-p7","type":"pset","n":7,"title":"Problem Set 7","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset7_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset7sol_pdf/","component":"pset"},
+  {"id":"micro-l23","type":"lecture","n":23,"title":"Lecture 23: Government Redistribution and Taxation","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-23-government-redistribution-and-taxation/"},
+  {"id":"micro-l24","type":"lecture","n":24,"title":"Lecture 24: Externalities","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-24-externalities/"},
+  {"id":"micro-p8","type":"pset","n":8,"title":"Problem Set 8","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset8_pdf/","solutions":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_pset8sol_pdf/","component":"pset"},
+  {"id":"micro-l25","type":"lecture","n":25,"title":"Lecture 25: Behavioral Economics","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-25-behavioral-economics/"},
+  {"id":"micro-l26","type":"lecture","n":26,"title":"Lecture 26: Health Care Economics","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/lec-26-health-care-economics/"},
+  {"id":"micro-final","type":"exam","title":"Final Exam","short":"Final","url":"https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/resources/mit14_01_f23_final_pdf/","solutions":null,"solutionsInline":true,"component":"final","minutes":180,"units":3}
+ ]
+}

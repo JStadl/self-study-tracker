@@ -1,0 +1,105 @@
+{
+ "schema": 1,
+ "id": "macro",
+ "code": "14.02",
+ "name": "Principles of Macroeconomics",
+ "term": "Spring 2023",
+ "source": "MIT OpenCourseWare",
+ "sourceUrl": "https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/",
+ "license": "CC BY-NC-SA 4.0",
+ "pace": 5,
+ "links": [
+  {
+   "label": "Syllabus",
+   "url": "https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/pages/syllabus/"
+  },
+  {
+   "label": "Topics and readings",
+   "url": "https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/pages/topics-and-readings/"
+  }
+ ],
+ "components": [
+  {
+   "key": "pset",
+   "label": "Problem sets (lowest dropped)",
+   "weight": 25,
+   "drop": 1
+  },
+  {
+   "key": "q1",
+   "label": "Quiz 1",
+   "weight": 25
+  },
+  {
+   "key": "q2",
+   "label": "Quiz 2",
+   "weight": 25
+  },
+  {
+   "key": "q3",
+   "label": "Quiz 3",
+   "weight": 25
+  }
+ ],
+ "letters": [
+  [
+   85,
+   "A"
+  ],
+  [
+   75,
+   "B"
+  ],
+  [
+   65,
+   "C"
+  ],
+  [
+   55,
+   "D"
+  ],
+  [
+   0,
+   "F"
+  ]
+ ],
+ "orderNote": "OCW does not publish due dates for these problem sets, so their positions between lectures are an estimate. If one asks about material you have not reached, use More, then Move later.",
+ "items": [
+  {"id":"macro-l1","type":"lecture","n":1,"title":"Lecture 1: Introduction to 14.02 Principles of Macroeconomics","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-1-v2_mp4/"},
+  {"id":"macro-l2","type":"lecture","n":2,"title":"Lecture 2: Basic Macroeconomic Concepts","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-2-v2_mp4/"},
+  {"id":"macro-l3","type":"lecture","n":3,"title":"Lecture 3: The Goods Market","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-3-v2_mp4/"},
+  {"id":"macro-p1","type":"pset","n":1,"title":"Problem Set 1","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset1_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset1_solutions_pdf/","component":"pset"},
+  {"id":"macro-l4","type":"lecture","n":4,"title":"Lecture 4: The Financial Market","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-4-v2_mp4/"},
+  {"id":"macro-l5","type":"lecture","n":5,"title":"Lecture 5: IS-LM Model","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-5-v2_mp4/"},
+  {"id":"macro-p2","type":"pset","n":2,"title":"Problem Set 2","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset2_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset2_solutions_pdf/","component":"pset"},
+  {"id":"macro-l6","type":"lecture","n":6,"title":"Lecture 6: IS-LM, continued","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-6-v2_mp4/"},
+  {"id":"macro-l7","type":"lecture","n":7,"title":"Lecture 7: An Extended IS-LM Model","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-7-v2_mp4/"},
+  {"id":"macro-p3","type":"pset","n":3,"title":"Problem Set 3","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset3_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset3_solutions_pdf/","component":"pset"},
+  {"id":"macro-l8","type":"lecture","n":8,"title":"Lecture 8: The Labor Market","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-8-v2_mp4/"},
+  {"id":"macro-l9","type":"lecture","n":9,"title":"Lecture 9: The Phillips Curve and Inflation","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-9-v2_mp4/"},
+  {"id":"macro-p4","type":"pset","n":4,"title":"Problem Set 4","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset4_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset4_solutions_pdf/","component":"pset"},
+  {"id":"macro-l10","type":"lecture","n":10,"title":"Lecture 10: Quiz 1 Review","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-10-v2_mp4/"},
+  {"id":"macro-q1","type":"exam","title":"Quiz 1","short":"Q1","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_quiz1_no_sol_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_quiz1_pdf/","component":"q1","minutes":90,"units":2},
+  {"id":"macro-l11","type":"lecture","n":11,"title":"Lecture 11: The IS-LM-PC Model","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-11-v2_mp4/"},
+  {"id":"macro-l12","type":"lecture","n":12,"title":"Lecture 12: IS-LM-PC Model continued","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-12-v2_mp4/"},
+  {"id":"macro-l13","type":"lecture","n":13,"title":"Lecture 13: The Facts of Growth","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-13-v2_mp4/"},
+  {"id":"macro-p5","type":"pset","n":5,"title":"Problem Set 5","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset5_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset5_solutions_pdf/","component":"pset"},
+  {"id":"macro-l14","type":"lecture","n":14,"title":"Lecture 14: Saving, Capital Accumulation, and Output","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-14-v2_mp4/"},
+  {"id":"macro-l15","type":"lecture","n":15,"title":"Lecture 15: Technological Progress and Growth","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-15-v2_mp4/"},
+  {"id":"macro-l16","type":"lecture","n":16,"title":"Lecture 16: Convergence and Cross-Country Variation","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-16-v2_mp4/"},
+  {"id":"macro-p6","type":"pset","n":6,"title":"Problem Set 6","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset6_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset6_solutions_pdf/","component":"pset"},
+  {"id":"macro-l17","type":"lecture","n":17,"title":"Lecture 17: Introduction to Open Economy","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-17-v2_mp4/"},
+  {"id":"macro-l18","type":"lecture","n":18,"title":"Lecture 18: Quiz 2 Review","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-18-v2_mp4/"},
+  {"id":"macro-q2","type":"exam","title":"Quiz 2","short":"Q2","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_quiz2_pdf/","solutions":null,"solutionsInline":true,"component":"q2","minutes":90,"units":2},
+  {"id":"macro-l19","type":"lecture","n":19,"title":"Lecture 19: The Goods Market in the Open Economy","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-19-v2_mp4/"},
+  {"id":"macro-l20","type":"lecture","n":20,"title":"Lecture 20: The Mundell-Fleming Model","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-20-v2_mp4/"},
+  {"id":"macro-l21","type":"lecture","n":21,"title":"Lecture 21: Exchange Rate Regimes","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-21-v2_mp4/"},
+  {"id":"macro-p7","type":"pset","n":7,"title":"Problem Set 7","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset7_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset7_solutions_pdf/","component":"pset"},
+  {"id":"macro-l22","type":"lecture","n":22,"title":"Lecture 22: Financial Markets and Expectations","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-22-v2_mp4/"},
+  {"id":"macro-l23","type":"lecture","n":23,"title":"Lecture 23: Asset Pricing","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-23-v2_mp4/"},
+  {"id":"macro-l24","type":"lecture","n":24,"title":"Lecture 24: IS-LM and Expectations","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-24-v2_mp4/"},
+  {"id":"macro-p8","type":"pset","n":8,"title":"Problem Set 8","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset8_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_pset8_solutions_pdf/","component":"pset"},
+  {"id":"macro-l25","type":"lecture","n":25,"title":"Lecture 25: Quiz 3 Review","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/1402-sp23-lecture-25-v2_mp4/"},
+  {"id":"macro-q3","type":"exam","title":"Quiz 3","short":"Q3","url":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_quiz3_no_sol_pdf/","solutions":"https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/mit14_02_s23_quiz3_solutions_pdf/","component":"q3","minutes":90,"units":2}
+ ]
+}

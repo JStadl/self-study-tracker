@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Self-Study Tracker</title><style>
+/* Layout idea: one narrow working column; summary cards on top, then a ledger of rows (type chip, title, due date, action). */
+:root{
+  --bg:#f2f5f3; --surface:#ffffff; --ink:#14211d; --muted:#5a6964; --line:#d8dfdb; --accent:#0e6b59; --accent-ink:#ffffff; --tint:#e3efeb;
+  --good:#2c7a45; --warn:#a86200; --crit:#b3261e;
+  --display:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1513; --surface:#171f1c; --ink:#e6ece9; --muted:#93a39d; --line:#2a3632; --accent:#52c4aa; --accent-ink:#06211b; --tint:#1c2c28;
+    --good:#6fcf8d; --warn:#e5a84a; --crit:#f2867f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1513; --surface:#171f1c; --ink:#e6ece9; --muted:#93a39d; --line:#2a3632; --accent:#52c4aa; --accent-ink:#06211b; --tint:#1c2c28;
+  --good:#6fcf8d; --warn:#e5a84a; --crit:#f2867f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+#app{max-width:860px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:20px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-size:22px;font-weight:600}
+h2{font-size:16px;font-weight:600}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+.save{font-size:12px;color:var(--muted);font-family:var(--mono)}
+nav{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line)}
+nav a{padding:8px 12px;text-decoration:none;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.card .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.code{font-family:var(--mono);font-weight:500;font-size:18px}
+.bar{height:8px;background:var(--tint);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.stats{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px}
+.stats b{font-family:var(--mono);font-weight:500}
+.pill{display:inline-block;font-size:12px;font-weight:500;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.pill.good{color:var(--good)} .pill.warn{color:var(--warn)} .pill.crit{color:var(--crit)} .pill.plain{color:var(--muted)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.row{display:grid;grid-template-columns:64px 1fr;gap:4px 12px;padding:10px 14px;border-top:1px solid var(--line);border-left:3px solid transparent}
+.row:first-child{border-top:0}
+.row.over{border-left-color:var(--crit)}
+.row.assess{background:linear-gradient(var(--tint),var(--tint))}
+.row.done{background:var(--surface)}
+.row.locked .ttl,.row.done .ttl{color:var(--muted)}
+.chip{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.04em;color:var(--muted);padding-top:3px}
+.row.assess .chip{color:var(--accent)}
+.body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.line1{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;align-items:baseline}
+.ttl{font-weight:500}
+.ttl a{color:inherit;text-decoration-color:var(--line);text-underline-offset:3px}
+.due{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.row.over .due{color:var(--crit)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,.btn{font:inherit;font-size:13px;font-weight:500;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-block}
+button.primary,.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.quiet{border-color:transparent;background:transparent;color:var(--muted);padding:5px 6px}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=number],input[type=date]{font:inherit;font-family:var(--mono);font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:84px}
+input[type=date]{width:150px}
+.panel{border:1px dashed var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
+.err{color:var(--crit);font-size:13px}
+.note{font-size:13px;color:var(--warn)}
+.lockmsg{font-size:13px;color:var(--muted)}
+.timer{font-family:var(--mono);font-size:15px;font-weight:500}
+.timer.up{color:var(--crit)}
+details.more summary{cursor:pointer;font-size:12px;color:var(--muted);list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more[open]{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 8px 5px 0;border-bottom:1px solid var(--line)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.form{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end}
+.form label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.banner{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:14px 16px;font-weight:500}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;max-width:calc(100% - 32px);z-index:5}
+canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+footer{font-size:12px;color:var(--muted);max-width:65ch}
+@media (max-width:480px){.row{grid-template-columns:1fr}.chip{padding-top:0}}
+.save.err{color:var(--crit)}
+input[type=text],input[type=password]{font:inherit;font-family:var(--mono);font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:170px}
+.scroll{overflow-x:auto}
+svg.tl{display:block;font-family:var(--mono)}
+.tl-grid{stroke:var(--line);stroke-width:1}
+.tl-sep{stroke:var(--line);stroke-width:1}
+.tl-wk{fill:var(--muted);font-size:11px}
+.tl-lane{fill:var(--ink);font-size:13px;font-weight:500}
+.tl-sub{fill:var(--muted);font-size:10px}
+.tl-lab{fill:var(--muted);font-size:10px;stroke:none}
+.tl-today{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:3 3}
+.tl-todaylab{fill:var(--ink);font-size:11px;font-weight:500}
+.m-done circle,.m-done rect{fill:var(--accent);stroke:var(--surface);stroke-width:1.5}
+.m-todo circle,.m-todo rect{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.m-over circle,.m-over rect{fill:var(--surface);stroke:var(--crit);stroke-width:2.2}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted)}
+.key{display:inline-flex;align-items:center;gap:5px}
+table.agenda td{white-space:nowrap}
+table.agenda td:nth-child(3){white-space:normal;min-width:200px}
+table.agenda tr.wk th{padding-top:14px;font-weight:600;border-bottom:1px solid var(--ink)}
+table.agenda tr.wk.now th{color:var(--accent)}
+</style></head><body><div id="app"></div><script>
+/*
+  Self-Study Tracker. One file, no build step, no dependencies.
+  Sections, in order (search for the "----------" banners):
+    courses    load config.json and courses/*.json, normalise them into COURSES
+    dates      local-date helpers
+    state      the progress object, plans, locking rule, grades
+    storage    read/write state.json through the GitHub contents API; local mode
+    rendering  row(), card(), viewToday(), viewCourse()
+    timeline   SVG chart and week-by-week table
+    plan       viewPlan() with pace controls and owner sign-in
+    rewards    toast and confetti
+    actions    act(): every button click ends up here
+  AGENTS.md explains the data formats and the rules to keep when changing this file.
+*/
+(function(){
+"use strict";
+/* ---------- courses: loaded from courses/index.json and the files it lists ---------- */
+var VERSION="1.1.0",SCHEMA=1;   /* SCHEMA is the newest course-file format this code understands */
+var COURSES=[],ITEM_COURSE={},DEFAULT_PACE=5,loadErr=null,CFG={title:"Self-Study Tracker"};
+/* Item types are data. mode "tick" = ticked off when done; mode "assess" = submitted, then marked against solutions.
+   config.json ("types") and a course file ("types") can change these or add new ones without touching this code. */
+var TYPES={
+  lecture:{label:"LEC",short:"L",mode:"tick",units:1,verb:"Watch",done:"watched"},
+  reading:{label:"READ",short:"R",mode:"tick",units:1,verb:"Open",done:"read"},
+  pset:{label:"PSET",short:"P",mode:"assess",units:2,open:"Open problem set"},
+  exam:{label:"EXAM",short:"",mode:"assess",timed:true,units:2,minutes:90,open:"Open paper"}
+};
+function mergeTypes(base,extra){
+  var out={},k;for(k in base)out[k]=base[k];
+  for(k in (extra||{})){
+    var d={},b=out[k]||{},e=extra[k]||{},f;for(f in b)d[f]=b[f];for(f in e)d[f]=e[f];
+    if(d.mode!=="tick"&&d.mode!=="assess")throw new Error('item type "'+k+'" needs a mode of "tick" or "assess"');
+    d.label=d.label||k.toUpperCase().slice(0,5);d.done=d.done||(d.mode==="tick"?"done":"submitted");d.verb=d.verb||"Open";d.open=d.open||"Open";d.units=+d.units||1;
+    out[k]=d;
+  }
+  return out;
+}
+function normCourse(c){
+  if(!c||!c.id||!c.items||!c.items.length)throw new Error("a course file needs an id and a list of items");
+  if(+c.schema>SCHEMA)throw new Error("course "+c.id+" uses course-file format "+c.schema+", but this copy of the tracker only understands up to "+SCHEMA+". Update the tracker code from the template");
+  var types=mergeTypes(TYPES,c.types);
+  if(/^(today|timeline|plan)$/.test(c.id)||!/^[a-z0-9-]+$/.test(c.id))throw new Error('course id "'+c.id+'" must use lowercase letters, digits and hyphens, and cannot be today, timeline or plan');
+  var out={id:c.id,code:c.code||c.id,name:c.name||"",term:c.term||"",pace:+c.pace||DEFAULT_PACE,orderNote:c.orderNote||"",letters:c.letters||null,source:c.source||"",sourceUrl:c.sourceUrl||"",license:c.license||"",
+    links:(c.links||[]).map(function(l){return [l.label,l.url];}),
+    comps:(c.components||[]).map(function(k){return {key:k.key,label:k.label||k.key,weight:+k.weight||0,drop:k.drop||0};})};
+  out.items=c.items.map(function(i){
+    var def=types[i.type];
+    if(!def||!i.id||!i.title)throw new Error("course "+c.id+": item "+(i.id||"(no id)")+" needs an id, a title and a known type ("+Object.keys(types).join(", ")+")");
+    if(ITEM_COURSE[i.id])throw new Error("item id "+i.id+" is used twice");
+    ITEM_COURSE[i.id]=out;
+    return {id:i.id,t:i.type,def:def,n:i.n,title:i.title,short:i.short||"",url:i.url||"",sol:i.solutions||null,mins:+i.minutes||+def.minutes||90,w:+i.units||def.units,comp:i.component||null,combined:!!i.solutionsInline};
+  });
+  return out;
+}
+function loadCourses(){
+  var get=function(u){return fetch(u+"?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("could not load "+u);return r.json();});};
+  var cfg=get("config.json").then(function(c){if(c&&c.title)CFG.title=String(c.title);if(c&&+c.defaultPace>0)DEFAULT_PACE=+c.defaultPace;if(c&&c.types)TYPES=mergeTypes(TYPES,c.types);document.title=CFG.title;},function(){});
+  return cfg.then(function(){return get("courses/index.json");}).then(function(list){return Promise.all(list.map(function(f){return get("courses/"+f);}));}).then(function(cs){COURSES=cs.map(normCourse);});
+}
+function isTick(it){return it.def.mode==="tick";}
+function isTimed(it){return !!it.def.timed;}
+
+/* ---------- dates ---------- */
+function pad(n){return (n<10?"0":"")+n;}
+function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function addDays(d,n){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x;}
+var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function nice(s){var d=parse(s);return DOW[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():"");}
+var TODAY=ymd(new Date());
+
+
+/* ---------- state ---------- */
+var SCOPE=location.pathname.replace(/[^\/]*$/,""),LS_KEY="study-tracker:"+SCOPE+":state",GH_KEY="study-tracker:"+SCOPE+":github";
+var state={v:1,updatedAt:0,items:{},plan:{},order:{},log:[]},ui={open:null,edit:null,confirm:null,err:null};
+var mode="loading";            /* loading | view | owner | local */
+var gh={owner:"",repo:"",branch:"",token:""},sha=null;
+var IS_LOCAL=location.protocol==="file:"||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+function canEdit(){return mode==="owner"||mode==="local";}
+function norm(s){s=s&&s.v===1?s:{v:1,updatedAt:0};s.items=s.items||{};s.plan=s.plan||{};s.order=s.order||{};s.log=s.log||[];return s;}
+function st(id){return state.items[id]||{};}
+function mut(id){return state.items[id]||(state.items[id]={});}
+function byId(c,id){for(var i=0;i<c.items.length;i++)if(c.items[i].id===id)return c.items[i];return null;}
+function ordered(c){
+  var o=state.order[c.id],out=[],seen={};
+  if(o)o.forEach(function(id){var it=byId(c,id);if(it&&!seen[id]){out.push(it);seen[id]=1;}});
+  c.items.forEach(function(it){if(!seen[it.id])out.push(it);});
+  return out;
+}
+function complete(it){var s=st(it.id);return isTick(it)?!!s.done:!!(s.submitted||s.skipped);}
+function makePlan(c,start,pace){
+  var cum=0,due={},s=parse(start);
+  ordered(c).forEach(function(it){if(complete(it))return;cum+=it.w;due[it.id]=ymd(addDays(s,Math.ceil(cum*7/pace)));});
+  return {start:start,pace:pace,due:due};
+}
+function plan(c){return state.plan[c.id]||(plan.cache[c.id]||(plan.cache[c.id]=makePlan(c,TODAY,c.pace)));}
+plan.cache={};
+function dueOf(c,it){return plan(c).due[it.id]||null;}
+function finishOf(p){var m=null;for(var k in p.due)if(!m||p.due[k]>m)m=p.due[k];return m;}
+function doneDate(it){var s=st(it.id),d=s.done||s.submitted||(typeof s.skipped==="string"?s.skipped:null);return d?ymd(new Date(d.length===10?parse(d):d)):null;}
+function lockedBy(list,idx){
+  var it=list[idx];
+  for(var j=0;j<idx;j++){
+    var b=list[j];
+    if(!isTick(b)&&!complete(b)){
+      if(!isTick(it))return b;
+      var n=0;for(var k=j+1;k<idx;k++)if(isTick(list[k]))n++;
+      return n>=2?b:null;
+    }
+  }
+  return null;
+}
+function grade(c){
+  var wsum=0,acc=0,parts=[];
+  c.comps.forEach(function(comp){
+    var its=c.items.filter(function(i){return i.comp===comp.key;});
+    var sc=its.map(function(i){return st(i.id).score;}).filter(function(x){return x!=null;});
+    var n=sc.length,avg=null;
+    if(n){
+      if(comp.drop&&n===its.length&&n>comp.drop){sc.sort(function(a,b){return a-b;});sc=sc.slice(comp.drop);}
+      avg=sc.reduce(function(a,b){return a+b;},0)/sc.length;wsum+=comp.weight;acc+=avg*comp.weight;
+    }
+    parts.push({comp:comp,avg:avg,n:n,of:its.length});
+  });
+  return {pct:wsum?acc/wsum:null,weight:wsum,parts:parts};
+}
+function progress(c){
+  var tot=0,done=0,n=0,nd=0,over=0,p=plan(c);
+  c.items.forEach(function(it){tot+=it.w;n++;if(complete(it)){done+=it.w;nd++;}else if(p.due[it.id]&&p.due[it.id]<TODAY)over++;});
+  return {tot:tot,done:done,n:n,nd:nd,over:over,complete:nd===n};
+}
+function letter(c,pct){if(!c.letters||pct==null)return "";for(var i=0;i<c.letters.length;i++)if(pct>=c.letters[i][0])return " ("+c.letters[i][1]+")";return "";}
+
+/* ---------- storage: state.json in the GitHub repo, written through the GitHub API ---------- */
+var saveTimer=null,saving=false,dirty=false,savedAt=null,saveErr=null,lastMsg="Update progress";
+function b64(s){return btoa(unescape(encodeURIComponent(s)));}
+function unb64(s){return decodeURIComponent(escape(atob(s.replace(/\s/g,""))));}
+function detectRepo(){
+  var m=location.hostname.match(/^([^.]+)\.github\.io$/);if(!m)return {owner:"",repo:""};
+  var seg=location.pathname.split("/").filter(Boolean)[0];
+  return {owner:m[1],repo:seg&&!/\.html?$/.test(seg)?seg:location.hostname};
+}
+function loadCfg(){
+  var d=detectRepo();gh.owner=d.owner;gh.repo=d.repo;
+  try{var c=JSON.parse(localStorage.getItem(GH_KEY));if(c){gh.owner=c.owner||gh.owner;gh.repo=c.repo||gh.repo;gh.branch=c.branch||"";gh.token=c.token||"";}}catch(e){}
+}
+function saveCfg(){try{localStorage.setItem(GH_KEY,JSON.stringify(gh));}catch(e){}}
+function api(method,path,body){
+  var url="https://api.github.com/repos/"+encodeURIComponent(gh.owner)+"/"+encodeURIComponent(gh.repo)+path;
+  if(method==="GET"&&path&&gh.branch)url+="?ref="+encodeURIComponent(gh.branch);
+  return fetch(url,{method:method,cache:"no-store",headers:{"Authorization":"Bearer "+gh.token,"Accept":"application/vnd.github+json"},body:body?JSON.stringify(body):undefined});
+}
+function fetchStatic(){return fetch("state.json?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("no state file");return r.json();});}
+function fetchRemote(){
+  return api("GET","/contents/state.json").then(function(r){
+    if(r.status===404){sha=null;return null;}
+    if(!r.ok)throw new Error("GitHub returned "+r.status);
+    return r.json().then(function(j){sha=j.sha;return JSON.parse(unb64(j.content));});
+  });
+}
+function boot(){loadCourses().then(bootState,function(e){loadErr=e.message;mode="view";render();});}
+function bootState(){
+  loadCfg();
+  var p;
+  if(gh.token&&gh.owner&&gh.repo){
+    p=fetchRemote().then(function(s){
+      if(s){state=norm(s);mode="owner";return;}
+      return fetchStatic().then(function(x){state=norm(x);},function(){}).then(function(){mode="owner";});
+    },function(e){saveErr="Could not sign in with the saved token ("+e.message+"). Showing the read-only view.";return fetchStatic().then(function(x){state=norm(x);},function(){}).then(function(){mode=IS_LOCAL?"local":"view";});});
+  }else{
+    p=fetchStatic().then(function(x){state=norm(x);},function(){}).then(function(){
+      mode=IS_LOCAL?"local":"view";
+      if(mode==="local"){try{var ls=JSON.parse(localStorage.getItem(LS_KEY));if(ls&&ls.v===1&&ls.updatedAt>state.updatedAt)state=norm(ls);}catch(e){}}
+    });
+  }
+  p.then(function(){plan.cache={};render();});
+}
+function flush(retry){
+  if(mode!=="owner"||saving)return;
+  saving=true;dirty=false;saveErr=null;setSaveLabel();
+  var body={message:lastMsg,content:b64(JSON.stringify(state,null,1))};
+  if(sha)body.sha=sha;if(gh.branch)body.branch=gh.branch;
+  api("PUT","/contents/state.json",body).then(function(r){
+    if((r.status===409||r.status===422)&&!retry){
+      return api("GET","/contents/state.json").then(function(g){return g.ok?g.json():{};}).then(function(j){sha=j.sha||null;saving=false;flush(true);});
+    }
+    if(!r.ok)throw new Error("GitHub returned "+r.status);
+    return r.json().then(function(j){sha=j.content.sha;saving=false;savedAt=new Date();setSaveLabel();if(dirty)flush();});
+  }).catch(function(e){saving=false;dirty=true;saveErr="Save failed: "+e.message+". Your change is kept in this browser; it will retry on your next action.";setSaveLabel();});
+}
+function scheduleSave(){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}catch(e){}
+  if(mode!=="owner")return;
+  dirty=true;clearTimeout(saveTimer);saveTimer=setTimeout(function(){flush();},4000);setSaveLabel();
+}
+function setSaveLabel(){
+  var el=document.getElementById("save");if(!el)return;
+  el.textContent=mode==="loading"?"Loading…":mode==="view"?"Read-only view":mode==="local"?"Local mode: saved in this browser only":
+    saveErr?saveErr:saving?"Saving to GitHub…":dirty?"Unsaved changes…":savedAt?"Saved to GitHub at "+pad(savedAt.getHours())+":"+pad(savedAt.getMinutes()):"Signed in as owner";
+  el.className="save"+(saveErr?" err":"");
+}
+function change(fn,msg,logEntry){
+  fn();state.updatedAt=Date.now();plan.cache={};
+  if(logEntry){state.log.push({t:new Date().toISOString(),id:logEntry[0],a:logEntry[1]});if(state.log.length>1000)state.log=state.log.slice(-1000);}
+  if(msg)lastMsg=msg;
+  render();scheduleSave();
+}
+function ensurePlans(){COURSES.forEach(function(c){if(!state.plan[c.id])state.plan[c.id]=makePlan(c,TODAY,c.pace);});}
+
+/* ---------- rendering ---------- */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function ext(url,label,cls){return '<a class="'+(cls||"btn")+'" href="'+url+'" target="_blank" rel="noopener">'+esc(label)+' ↗</a>';}
+function chip(it){return it.def.label+(it.n?" "+(isTick(it)?pad(it.n):it.n):"");}
+function courseOf(id){return ITEM_COURSE[id];}
+function fmtPct(x){return (Math.round(x*10)/10)+"%";}
+function scorePill(v){return '<span class="pill '+(v>=70?"good":v>=50?"warn":"crit")+'">'+fmtPct(v)+'</span>';}
+
+function row(c,list,idx,showCourse){
+  var it=list[idx],s=st(it.id),done=complete(it),blk=done?null:lockedBy(list,idx),due=dueOf(c,it),edit=canEdit();
+  var over=!done&&due&&due<TODAY,cls="row "+(isTick(it)?"tick":"assess")+(done?" done":"")+(blk?" locked":"")+(over?" over":"");
+  var ttl=(showCourse?'<span class="mono muted">'+c.code+'</span> ':"")+(isTick(it)&&it.url&&(!blk||!edit)?'<a href="'+it.url+'" target="_blank" rel="noopener">'+esc(it.title)+'</a>':esc(it.title));
+  var dueTxt=done?(isTick(it)?it.def.done:s.skipped?"skipped":"submitted"):due?(over?"overdue, was due "+nice(due):"due "+nice(due)):"";
+  var a="",extra="",more="";
+  var A=function(act,label,k){return '<button class="'+(k||"")+'" data-act="'+act+'" data-id="'+it.id+'">'+label+'</button>';};
+  if(!edit){
+    if(!isTick(it)){
+      if(s.skipped)a='<span class="pill crit">Skipped, scores 0%</span>';
+      else if(s.score!=null)a=scorePill(s.score);
+      else if(s.submitted)a='<span class="pill plain">Awaiting mark</span>';
+      else if(s.started)a='<span class="pill plain">In progress</span>';
+    }
+  }else if(isTick(it)){
+    if(done)more=A("reset","Mark as not "+esc(it.def.done),"quiet");
+    else if(blk)a='<span class="lockmsg">Locked until '+esc(blk.title)+' is submitted</span>';
+    else a=(it.url?ext(it.url,it.def.verb):"")+A("watch","Mark "+esc(it.def.done),"primary");
+  }else{
+    var solUrl=it.sol||it.url,solLabel=it.sol?"Open solutions":"Open paper with solutions";
+    if(blk){a='<span class="lockmsg">Locked until '+esc(blk.title)+' is submitted</span>';}
+    else if(s.skipped){a='<span class="pill crit">Skipped, scores 0%</span>';more=A("reset","Undo skip","quiet");}
+    else if(s.submitted&&s.score!=null&&ui.edit!==it.id){
+      a=scorePill(s.score)+ext(solUrl,solLabel)+A("edit","Change mark","quiet");
+      more=A("reset","Reset this item","quiet");
+    }else if(s.submitted){
+      a=ext(solUrl,solLabel,"btn primary")+'<label class="small muted" for="score-'+it.id+'">Your mark, %</label><input type="number" min="0" max="100" step="0.5" id="score-'+it.id+'" value="'+(s.score!=null?s.score:"")+'">'+A("mark","Save mark");
+      extra='<div class="small muted">Mark your work against the solutions, question by question, then enter your percentage.</div>';
+      more=A("reset","Reset this item","quiet");
+    }else if(isTimed(it)&&!s.started){
+      a=A("start","Start "+it.mins+"-minute timer","primary");
+      extra='<div class="small muted">Sit it closed-book in one go. The paper opens when the timer starts.</div>'+(it.combined?'<div class="note">This paper is only published with the solutions inside the same file. Cover the answers as you scroll.</div>':"");
+    }else{
+      if(isTimed(it))a='<span class="timer" data-timer="'+it.id+'"></span>';
+      a+=(it.url?ext(it.url,it.def.open):"")+A("open","Submit","primary");
+      if(it.combined)extra='<div class="note">Solutions are inside this file. Cover the answers as you scroll.</div>';
+      if(ui.open===it.id)extra+='<div class="panel"><label><input type="checkbox" id="attest-'+it.id+'"> I attempted every question before looking at any solution.</label><div class="acts">'+A("submit","Submit and unlock solutions","primary")+A("close","Cancel","quiet")+'</div></div>';
+    }
+    if(!blk&&!done)more+=ui.confirm===it.id?A("skip","Confirm: skip and score 0%","quiet"):A("askskip","Skip with 0%","quiet");
+    if(!done)more+=A("up","Move earlier","quiet")+A("down","Move later","quiet");
+    if(s.started&&!s.submitted)more+=A("reset","Reset timer","quiet");
+  }
+  if(ui.err&&ui.err.id===it.id)extra+='<div class="err">'+esc(ui.err.msg)+'</div>';
+  return '<div class="'+cls+'"><div class="chip">'+chip(it)+'</div><div class="body"><div class="line1"><span class="ttl">'+ttl+'</span><span class="due">'+dueTxt+'</span></div>'+
+    (a?'<div class="acts">'+a+'</div>':"")+extra+(more?'<details class="more"><summary>More</summary>'+more+'</details>':"")+'</div></div>';
+}
+
+function card(c){
+  var p=progress(c),g=grade(c),pl=plan(c),fin=finishOf(pl);
+  var pill=p.complete?'<span class="pill good">Complete</span>':p.over?'<span class="pill crit">'+p.over+' overdue</span>':'<span class="pill good">On track</span>';
+  return '<div class="card"><div class="head"><span><span class="code">'+c.code+'</span> <span class="muted small">'+esc(c.term)+'</span></span>'+pill+'</div><div>'+esc(c.name)+'</div>'+
+    '<div class="bar" role="img" aria-label="'+Math.round(100*p.done/p.tot)+'% of the work done"><i style="width:'+(100*p.done/p.tot)+'%"></i></div>'+
+    '<div class="stats"><span><b>'+p.nd+'/'+p.n+'</b> items</span><span>Grade so far <b>'+(g.pct==null?"n/a":fmtPct(g.pct)+letter(c,g.pct))+'</b></span>'+(fin&&!p.complete?'<span>Finish <b>'+nice(fin)+'</b></span>':"")+'</div>'+
+    '<div><a href="#'+c.id+'">Open '+c.code+'</a></div></div>';
+}
+
+function viewWelcome(){
+  return '<div class="card"><h2>No courses yet</h2><div style="max-width:65ch">This tracker is empty. To add a course, put a course file in the <span class="mono">courses</span> folder and list its file name in <span class="mono">courses/index.json</span>. Two worked examples are in <span class="mono">examples/courses</span>, and <span class="mono">README.md</span> describes every field.</div><div style="max-width:65ch">If you use an AI coding assistant, open the repository with it and ask it to add your course from the syllabus link. <span class="mono">AGENTS.md</span> tells it how.</div></div>';
+}
+function viewToday(){
+  if(!COURSES.length)return viewWelcome();
+  var horizon=ymd(addDays(parse(TODAY),7)),rows=[];
+  COURSES.forEach(function(c){
+    var list=ordered(c),got=0;
+    list.forEach(function(it,i){
+      if(complete(it))return;var d=dueOf(c,it);
+      if((d&&d<=horizon)||got===0){rows.push({d:d||"9999",h:row(c,list,i,true)});got++;}
+    });
+  });
+  rows.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0;});
+  var h='<div class="cards">'+COURSES.map(card).join("")+'</div>';
+  h+='<section><h2>Due in the next 7 days</h2><p class="muted small">Problem sets and exams stay locked in order. At most two lectures may be watched past an unsubmitted one.</p><div class="list">'+(rows.length?rows.map(function(r){return r.h;}).join(""):'<div class="row"><div></div><div>Nothing left. Every course is complete.</div></div>')+'</div></section>';
+  return h;
+}
+function viewCourse(c){
+  var list=ordered(c),p=progress(c),g=grade(c);
+  var h="";
+  if(p.complete)h+='<div class="banner">'+c.code+' complete. Final grade '+(g.pct==null?"not marked yet":fmtPct(g.pct)+letter(c,g.pct))+'.</div>';
+  h+='<div class="cards">'+card(c)+'<div class="card"><h2>Grade breakdown</h2><table><tr><th>Component</th><th class="num">Weight</th><th class="num">Marked</th><th class="num">Average</th></tr>'+
+    g.parts.map(function(x){return '<tr><td>'+esc(x.comp.label)+'</td><td class="num">'+x.comp.weight+'%</td><td class="num">'+x.n+'/'+x.of+'</td><td class="num">'+(x.avg==null?"n/a":fmtPct(x.avg))+'</td></tr>';}).join("")+
+    '</table><div class="small muted">Grade so far uses only the marked components ('+g.weight+'% of the course weight).</div></div></div>';
+  if(c.source)h+='<div class="small muted">Materials: '+(c.sourceUrl?'<a href="'+esc(c.sourceUrl)+'" target="_blank" rel="noopener">'+esc(c.source)+'</a>':esc(c.source))+(c.license?", "+esc(c.license):"")+'. This tracker links to them and does not host them.</div>';
+  h+='<div class="acts small">'+c.links.map(function(l){return ext(l[1],l[0],"");}).join(" ")+'</div>';
+  if(c.orderNote&&canEdit())h+='<div class="note">'+esc(c.orderNote)+'</div>';
+  h+='<div class="list">'+list.map(function(it,i){return row(c,list,i,false);}).join("")+'</div>';
+  return h;
+}
+
+/* ---------- timeline ---------- */
+function monday(s){var d=parse(s);return ymd(addDays(d,-((d.getDay()+6)%7)));}
+function dayDiff(a,b){return Math.round((parse(b)-parse(a))/864e5);}
+function short(s){var d=parse(s);return d.getDate()+" "+MON[d.getMonth()];}
+function shortLabel(it){return it.short||(it.def.short&&it.n?it.def.short+it.n:it.title.slice(0,6));}
+function timelineData(){
+  var all=[];
+  COURSES.forEach(function(c){ordered(c).forEach(function(it){
+    var done=complete(it),d=done?(doneDate(it)||TODAY):dueOf(c,it);if(!d)return;
+    all.push({c:c,it:it,d:d,status:done?"done":d<TODAY?"over":"todo"});
+  });});
+  return all;
+}
+function viewTimeline(){
+  if(!COURSES.length)return viewWelcome();
+  var all=timelineData(),min=TODAY,max=TODAY;
+  all.forEach(function(p){if(p.d<min)min=p.d;if(p.d>max)max=p.d;});
+  min=monday(min);max=ymd(addDays(parse(monday(max)),7));
+  var PX=13,L=58,T=30,days=dayDiff(min,max),W=L+days*PX+16;
+  var X=function(d){return L+dayDiff(min,d)*PX+PX/2;};
+  var y=T,svg="",lanes="";
+  COURSES.forEach(function(c){
+    var pts=all.filter(function(p){return p.c===c;}),stackL={},stackA={},maxL=1;
+    pts.forEach(function(p){var k=isTick(p.it)?stackL:stackA;p.k=k[p.d]||0;k[p.d]=p.k+1;if(isTick(p.it)&&k[p.d]>maxL)maxL=k[p.d];});
+    var aY=y+18,lY=y+52,h=52+maxL*11+10;
+    lanes+='<text class="tl-lane" x="0" y="'+(aY+4)+'">'+c.code+'</text><text class="tl-sub" x="0" y="'+(lY+4)+'">lectures</text><line class="tl-sep" x1="0" x2="'+W+'" y1="'+(y+h)+'" y2="'+(y+h)+'"/>';
+    pts.forEach(function(p){
+      var x=X(p.d),tip=c.code+" "+p.it.title+": "+(p.status==="done"?"done ":p.status==="over"?"overdue, was due ":"due ")+nice(p.d)+(st(p.it.id).score!=null?", "+fmtPct(st(p.it.id).score):""),m;
+      if(isTick(p.it))m='<circle cx="'+x+'" cy="'+(lY+p.k*11)+'" r="4"/>';
+      else{
+        var xx=x+p.k*15;
+        m=(!isTimed(p.it)?'<rect x="'+(xx-5.5)+'" y="'+(aY-5.5)+'" width="11" height="11" rx="2"/>':'<rect x="'+(xx-5.5)+'" y="'+(aY-5.5)+'" width="11" height="11" transform="rotate(45 '+xx+' '+aY+')"/>')+
+          '<text class="tl-lab" x="'+xx+'" y="'+(aY+21)+'" text-anchor="middle">'+esc(shortLabel(p.it))+'</text>';
+      }
+      svg+='<g class="m-'+p.status+'"><title>'+esc(tip)+'</title>'+m+'</g>';
+    });
+    y+=h;
+  });
+  var H=y+6,grid="";
+  for(var d=0;d<=days;d+=7){var gx=L+d*PX,ds=ymd(addDays(parse(min),d));grid+='<line class="tl-grid" x1="'+gx+'" x2="'+gx+'" y1="'+(T-8)+'" y2="'+H+'"/>'+(d<days?'<text class="tl-wk" x="'+(gx+4)+'" y="14">'+short(ds)+'</text>':"");}
+  var tx=X(TODAY);
+  var chart='<svg class="tl" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Timeline of every course by week. The table below lists the same items.">'+grid+lanes+
+    '<line class="tl-today" x1="'+tx+'" x2="'+tx+'" y1="'+(T-8)+'" y2="'+H+'"/><text class="tl-todaylab" x="'+(tx+4)+'" y="'+(T-1)+'">Today</text>'+svg+'</svg>';
+  var key=function(cls,shape,label){return '<span class="key"><svg width="14" height="14" viewBox="0 0 14 14" class="'+cls+'">'+shape+'</svg>'+label+'</span>';};
+  var legend='<div class="legend">'+key("m-done",'<circle cx="7" cy="7" r="4"/>',"Lecture or reading")+key("m-done",'<rect x="2" y="2" width="10" height="10" rx="2"/>',"Assignment")+key("m-done",'<rect x="2.5" y="2.5" width="9" height="9" transform="rotate(45 7 7)"/>',"Timed exam or quiz")+
+    key("m-done",'<circle cx="7" cy="7" r="4"/>',"Filled: done, on the day it was done")+key("m-todo",'<circle cx="7" cy="7" r="4"/>',"Hollow: planned, on its due date")+key("m-over",'<circle cx="7" cy="7" r="4"/>',"Red outline: overdue")+'</div>';
+  /* agenda by week */
+  var weeks={};all.forEach(function(p){var w=monday(p.d);(weeks[w]||(weeks[w]=[])).push(p);});
+  var thisWk=monday(TODAY),ag="";
+  Object.keys(weeks).sort().forEach(function(w){
+    var ps=weeks[w].sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0;}),nd=ps.filter(function(p){return p.status==="done";}).length;
+    ag+='<tr class="wk'+(w===thisWk?" now":"")+'"><th colspan="4">Week of '+short(w)+(w===thisWk?" · this week":"")+' <span class="muted">'+nd+'/'+ps.length+' done</span></th></tr>'+
+      ps.map(function(p){var s=st(p.it.id);return '<tr><td class="mono">'+nice(p.d)+'</td><td class="mono">'+p.c.code+'</td><td>'+esc(p.it.title)+'</td><td>'+(p.status==="done"?(s.skipped?'<span class="pill crit">Skipped</span>':s.score!=null?scorePill(s.score):'<span class="pill good">Done</span>'):p.status==="over"?'<span class="pill crit">Overdue</span>':'<span class="pill plain">Planned</span>')+'</td></tr>';}).join("");
+  });
+  return '<section><h2>Timeline</h2><p class="muted small">Hover a mark for details. The chart scrolls sideways on narrow screens.</p><div class="card"><div class="scroll">'+chart+'</div>'+legend+'</div></section>'+
+    '<section><h2>Week by week</h2><div class="card"><div class="scroll"><table class="agenda">'+ag+'</table></div></div></section>';
+}
+
+function viewPlan(){
+  var h="",edit=canEdit();
+  if(edit)h+='<p class="muted" style="max-width:65ch;margin:0">Pace is measured in units per week. One unit is roughly one lecture with notes, about 1 to 1.5 hours. A problem set or quiz usually counts 2 units, and a course file can give a big exam more. Replanning gives every unfinished item a new due date and clears anything overdue.</p>';
+  COURSES.forEach(function(c){
+    var pl=plan(c),nl=c.items.filter(function(i){return i.t==="lecture"&&i.n;}).length
+    h+='<div class="card"><h2>'+c.code+' '+esc(c.name)+'</h2><div class="small muted">Current plan: started '+nice(pl.start)+', '+pl.pace+' units a week, finishes '+(finishOf(pl)?nice(finishOf(pl)):"now")+'.</div>'+
+      (edit?'<div class="form"><label for="start-'+c.id+'">Replan from<input type="date" id="start-'+c.id+'" value="'+TODAY+'" data-prev="'+c.id+'"></label>'+
+      '<label for="pace-'+c.id+'">Units per week<input type="number" id="pace-'+c.id+'" min="1" max="30" step="1" value="'+pl.pace+'" data-prev="'+c.id+'"></label>'+
+      '<button class="primary" data-act="replan" data-id="'+c.id+'">Replan</button><span class="small muted" id="prev-'+c.id+'"></span></div>'+
+      (nl?'<div class="form"><label for="seen-'+c.id+'">Already watched lectures 1 to<input type="number" id="seen-'+c.id+'" min="0" max="'+nl+'" step="1" value=""></label><button data-act="seen" data-id="'+c.id+'">Mark as watched</button></div>':""):"")+
+      (ui.err&&ui.err.id===c.id?'<div class="err">'+esc(ui.err.msg)+'</div>':"")+'</div>';
+  });
+  h+='<div class="card"><h2>Owner</h2>';
+  if(mode==="owner")h+='<div class="small">Signed in. Changes are committed to <span class="mono">'+esc(gh.owner+"/"+gh.repo)+'</span> as <span class="mono">state.json</span>.</div><div class="acts"><button data-act="signout" data-id="x">Sign out on this browser</button></div>';
+  else h+='<div class="small muted" style="max-width:65ch">Only the repository owner can edit. Paste a fine-grained GitHub token that has Contents read and write access to this one repository. It is stored in this browser only and sent only to api.github.com.'+(mode==="local"?" You are in local mode, so edits already work here and stay in this browser.":"")+'</div>'+
+    '<div class="form"><label for="gh-owner">GitHub user<input type="text" id="gh-owner" value="'+esc(gh.owner)+'" autocomplete="off"></label><label for="gh-repo">Repository<input type="text" id="gh-repo" value="'+esc(gh.repo)+'" autocomplete="off"></label><label for="gh-branch">Branch (optional)<input type="text" id="gh-branch" value="'+esc(gh.branch)+'" autocomplete="off"></label><label for="gh-token">Token<input type="password" id="gh-token" value="" autocomplete="off"></label><button class="primary" data-act="signin" data-id="x">Sign in</button></div>';
+  if(ui.err&&ui.err.id==="gh")h+='<div class="err">'+esc(ui.err.msg)+'</div>';
+  h+='</div>';
+  return h;
+}
+function route(){var h=(location.hash||"").replace("#","");return (h==="plan"||h==="timeline"||COURSES.some(function(c){return c.id===h;}))?h:"today";}
+function render(){
+  var r=route(),tabs=[["today","Today"],["timeline","Timeline"]].concat(COURSES.map(function(c){return [c.id,c.code];}),[["plan","Plan"]]);
+  var h='<header class="top"><h1>'+esc(CFG.title)+'</h1><span class="save" id="save"></span></header><nav>'+tabs.map(function(t){return '<a href="#'+t[0]+'"'+(t[0]===r?' aria-current="page"':"")+'>'+t[1]+'</a>';}).join("")+'</nav>';
+  if(loadErr)h+='<p class="err">The course files did not load: '+esc(loadErr)+'. Check courses/index.json and the files it lists. Opening index.html straight from disk does not work; serve the folder over HTTP.</p>';
+  else if(mode==="loading")h+='<p class="muted">Loading progress…</p>';
+  else h+=r==="today"?viewToday():r==="timeline"?viewTimeline():r==="plan"?viewPlan():viewCourse(COURSES.filter(function(c){return c.id===r;})[0]);
+  h+='<footer>Course materials belong to their publishers and stay on their sites. This tracker only links to them and is not affiliated with any course provider. Tracker code version '+VERSION+'.</footer>';
+  document.getElementById("app").innerHTML=h;
+  setSaveLabel();tick();if(r==="plan"&&canEdit())COURSES.forEach(function(c){preview(c.id);});
+}
+function preview(cid){
+  var c=COURSES.filter(function(x){return x.id===cid;})[0],s=document.getElementById("start-"+cid),p=document.getElementById("pace-"+cid),o=document.getElementById("prev-"+cid);
+  if(!c||!s||!p||!o)return;var pace=+p.value;
+  if(!s.value||!(pace>=1)){o.textContent="";return;}
+  var f=finishOf(makePlan(c,s.value,pace));o.textContent=f?"Would finish "+nice(f):"Nothing left to schedule";
+}
+function tick(){
+  var els=document.querySelectorAll("[data-timer]");
+  for(var i=0;i<els.length;i++){
+    var id=els[i].getAttribute("data-timer"),c=courseOf(id),it=byId(c,id),s=st(id);if(!s.started)continue;
+    var left=Math.round(it.mins*60-(Date.now()-new Date(s.started).getTime())/1000);
+    if(left<=0){els[i].textContent="Time is up";els[i].className="timer up";}
+    else{var hh=Math.floor(left/3600),mm=Math.floor(left%3600/60),ss=left%60;els[i].textContent=(hh?hh+":":"")+pad(mm)+":"+pad(ss)+" left";}
+  }
+}
+
+/* ---------- small rewards ---------- */
+function toast(msg){
+  var old=document.querySelector(".toast");if(old)old.remove();
+  var t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){t.remove();},4000);
+}
+function confetti(big){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var cv=document.createElement("canvas");cv.className="fx";document.body.appendChild(cv);
+  var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight,x=cv.getContext("2d"),cols=["#0e6b59","#52c4aa","#e5a84a","#b3261e","#3b6fd6"],ps=[],n=big?260:90;
+  for(var i=0;i<n;i++)ps.push({x:W/2+(Math.random()-.5)*W*(big?.9:.3),y:big?-20-Math.random()*H*.4:H*.75,vx:(Math.random()-.5)*(big?5:11),vy:big?2+Math.random()*4:-8-Math.random()*8,s:4+Math.random()*5,r:Math.random()*6,c:cols[i%cols.length]});
+  var t0=Date.now(),dur=big?3200:1700;
+  (function frame(){
+    var e=Date.now()-t0;x.clearRect(0,0,W,H);
+    ps.forEach(function(p){p.vy+=.28;p.x+=p.vx;p.y+=p.vy;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=Math.max(0,1-e/dur);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/3,p.s,p.s*.66);x.restore();});
+    if(e<dur)requestAnimationFrame(frame);else cv.remove();
+  })();
+}
+function celebrate(c,it,msg){
+  if(progress(c).complete){confetti(true);toast(c.code+" complete. Every lecture, problem set and exam is done.");}
+  else{if(!isTick(it))confetti(false);toast(msg);}
+}
+
+/* ---------- actions ---------- */
+function val(id){var e=document.getElementById(id);return e?String(e.value).trim():"";}
+function signIn(){
+  var o=val("gh-owner"),r=val("gh-repo"),b=val("gh-branch"),t=val("gh-token");
+  if(!o||!r||!t){ui.err={id:"gh",msg:"Enter the GitHub user, the repository and a token."};render();return;}
+  var prev={owner:gh.owner,repo:gh.repo,branch:gh.branch,token:gh.token};
+  gh.owner=o;gh.repo=r;gh.branch=b;gh.token=t;
+  api("GET","").then(function(res){
+    if(!res.ok)throw new Error(res.status===401?"GitHub rejected the token.":res.status===404?"Repository not found, or the token cannot see it.":"GitHub returned "+res.status+".");
+    return res.json();
+  }).then(function(j){
+    if(!j.permissions||!j.permissions.push)throw new Error("This token cannot write to the repository. It needs Contents: Read and write.");
+    return fetchRemote();
+  }).then(function(s){
+    if(s)state=norm(s);
+    mode="owner";saveErr=null;saveCfg();plan.cache={};ui.err=null;render();toast("Signed in. Changes now save to GitHub.");
+  }).catch(function(e){gh.owner=prev.owner;gh.repo=prev.repo;gh.branch=prev.branch;gh.token=prev.token;ui.err={id:"gh",msg:e.message||"Sign-in failed."};render();});
+}
+function act(a,id){
+  ui.err=null;
+  if(a==="signin"){signIn();return;}
+  if(a==="signout"){gh.token="";saveCfg();mode=IS_LOCAL?"local":"view";render();return;}
+  if(!canEdit())return;
+  if(a==="replan"||a==="seen"){
+    var c=COURSES.filter(function(x){return x.id===id;})[0];
+    if(a==="replan"){
+      var s=val("start-"+id),p=+val("pace-"+id);
+      if(!s||!(p>=1&&p<=30)){ui.err={id:id,msg:"Enter a start date and a pace between 1 and 30 units a week."};render();return;}
+      change(function(){state.plan[id]=makePlan(c,s,p);},"Replan "+c.code+" at "+p+" units a week",[id,"replan"]);toast(c.code+" replanned. New finish date "+nice(finishOf(state.plan[id]))+".");
+    }else{
+      var n=+val("seen-"+id);
+      if(!(n>=1)){ui.err={id:id,msg:"Enter the number of the last lecture you have watched."};render();return;}
+      change(function(){ensurePlans();c.items.forEach(function(it){if(it.t==="lecture"&&it.n<=n&&!st(it.id).done)mut(it.id).done=TODAY;});},c.code+": lectures 1 to "+n+" watched");toast("Lectures 1 to "+n+" marked as watched.");
+    }
+    return;
+  }
+  var c2=courseOf(id),it=c2&&byId(c2,id);if(!it)return;
+  var name=c2.code+" "+it.title.split(":")[0];
+  if(a==="open"){ui.open=id;render();return;}
+  if(a==="close"){ui.open=null;render();return;}
+  if(a==="edit"){ui.edit=id;render();return;}
+  if(a==="askskip"){ui.confirm=id;render();var d=document.querySelectorAll('[data-act="skip"][data-id="'+id+'"]')[0];if(d&&d.parentNode)d.parentNode.open=true;return;}
+  if(a==="watch"){var verb=" "+it.def.done;change(function(){ensurePlans();mut(id).done=new Date().toISOString();},name+verb,[id,"watch"]);celebrate(c2,it,it.title.split(":")[0]+verb+".");return;}
+  if(a==="start"){change(function(){ensurePlans();mut(id).started=new Date().toISOString();},name+" started",[id,"start"]);toast("Timer started. "+it.mins+" minutes.");return;}
+  if(a==="submit"){
+    var cb=document.getElementById("attest-"+id);
+    if(!cb||!cb.checked){ui.err={id:id,msg:"Tick the box to confirm you attempted it without the solutions. If you did not, skip it for 0% instead."};render();return;}
+    change(function(){ensurePlans();mut(id).submitted=new Date().toISOString();ui.open=null;},name+" submitted",[id,"submit"]);
+    celebrate(c2,it,it.title+" submitted. Solutions unlocked, now mark it.");return;
+  }
+  if(a==="mark"){
+    var v=parseFloat(val("score-"+id));
+    if(!(v>=0&&v<=100)){ui.err={id:id,msg:"Enter a mark between 0 and 100."};render();return;}
+    change(function(){mut(id).score=v;ui.edit=null;},name+" marked "+fmtPct(v),[id,"mark"]);toast(it.title+" marked at "+fmtPct(v)+".");return;
+  }
+  if(a==="skip"){change(function(){ensurePlans();var m=mut(id);m.skipped=new Date().toISOString();m.score=0;ui.confirm=null;ui.open=null;},name+" skipped",[id,"skip"]);toast(it.title+" skipped. It counts as 0%.");return;}
+  if(a==="reset"){change(function(){delete state.items[id];ui.edit=null;ui.open=null;},name+" reset",[id,"reset"]);return;}
+  if(a==="up"||a==="down"){
+    change(function(){
+      ensurePlans();var list=ordered(c2).map(function(x){return x.id;}),i=list.indexOf(id),j=a==="up"?i-1:i+1;
+      if(j<0||j>=list.length)return;
+      var o=list[j];list[j]=id;list[i]=o;state.order[c2.id]=list;
+      var due=state.plan[c2.id].due,t=due[id];if(due[o]){due[id]=due[o];if(t)due[o]=t;}
+    },name+" moved");return;
+  }
+}
+document.getElementById("app").addEventListener("click",function(e){
+  var b=e.target.closest?e.target.closest("[data-act]"):null;if(!b)return;
+  act(b.getAttribute("data-act"),b.getAttribute("data-id"));
+});
+document.getElementById("app").addEventListener("input",function(e){var p=e.target.getAttribute&&e.target.getAttribute("data-prev");if(p)preview(p);});
+window.addEventListener("hashchange",function(){ui.open=null;ui.confirm=null;ui.err=null;render();window.scrollTo(0,0);});
+window.addEventListener("beforeunload",function(e){if(mode==="owner"&&(dirty||saving)){e.preventDefault();e.returnValue="";}});
+window.__tracker={version:VERSION,schema:SCHEMA,types:function(){return TYPES;},courses:function(){return COURSES;},state:function(){return state;},mode:function(){return mode;},grade:grade,progress:progress,plan:plan};
+setInterval(tick,1000);
+render();
+boot();
+})();
+</script></body></html>
