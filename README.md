@@ -1,4 +1,4 @@
-# Self-Study Tracker - Written by me, not AI
+# Self-Study Tracker - README written by me, not AI
 
 
 My personal version of this [template](https://github.com/JStadl/template-self-study-tracker). It contains the data that is then used to show a webpage of my progress with online courses I have pursued for my leisure. You can see the page [here](https://jstadl.github.io/self-study-tracker/). 
