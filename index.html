@@ -83,6 +83,8 @@ td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabu
 .banner{background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:14px 16px;font-weight:500}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;max-width:calc(100% - 32px);z-index:5}
 canvas.fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.home{font-size:13px;text-decoration:none;color:var(--muted)}
+.home:hover{color:var(--accent)}
 footer{font-size:12px;color:var(--muted);max-width:65ch}
 @media (max-width:480px){.row{grid-template-columns:1fr}.chip{padding-top:0}}
 .save.err{color:var(--crit)}
@@ -106,7 +108,9 @@ table.agenda td{white-space:nowrap}
 table.agenda td:nth-child(3){white-space:normal;min-width:200px}
 table.agenda tr.wk th{padding-top:14px;font-weight:600;border-bottom:1px solid var(--ink)}
 table.agenda tr.wk.now th{color:var(--accent)}
-</style></head><body><div id="app"></div><script>
+</style>
+<!-- Your own theme goes in custom.css, which template updates never overwrite. See "Theming" in README.md. -->
+<link rel="stylesheet" href="custom.css"></head><body><div id="app"></div><script>
 /*
   Self-Study Tracker. One file, no build step, no dependencies.
   Sections, in order (search for the "----------" banners):
@@ -124,8 +128,8 @@ table.agenda tr.wk.now th{color:var(--accent)}
 (function(){
 "use strict";
 /* ---------- courses: loaded from courses/index.json and the files it lists ---------- */
-var VERSION="1.1.1",SCHEMA=1;   /* SCHEMA is the newest course-file format this code understands */
-var COURSES=[],ITEM_COURSE={},DEFAULT_PACE=5,loadErr=null,CFG={title:"Self-Study Tracker"};
+var VERSION="1.2.0",SCHEMA=1;   /* SCHEMA is the newest course-file format this code understands */
+var COURSES=[],ITEM_COURSE={},DEFAULT_PACE=5,loadErr=null,CFG={title:"Self-Study Tracker",homeLabel:"",homeUrl:""};
 /* Item types are data. mode "tick" = ticked off when done; mode "assess" = submitted, then marked against solutions.
    config.json ("types") and a course file ("types") can change these or add new ones without touching this code. */
 var TYPES={
@@ -171,7 +175,7 @@ function normCourse(c){
 }
 function loadCourses(){
   var get=function(u){return fetch(u+"?t="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("could not load "+u);return r.json();});};
-  var cfg=get("config.json").then(function(c){if(c&&c.title)CFG.title=String(c.title);if(c&&+c.defaultPace>0)DEFAULT_PACE=+c.defaultPace;if(c&&c.types)TYPES=mergeTypes(TYPES,c.types);document.title=CFG.title;},function(){});
+  var cfg=get("config.json").then(function(c){if(c&&c.title)CFG.title=String(c.title);if(c&&+c.defaultPace>0)DEFAULT_PACE=+c.defaultPace;if(c&&c.types)TYPES=mergeTypes(TYPES,c.types);if(c&&c.home&&c.home.url){CFG.homeUrl=safeUrl(c.home.url,"config.json home.url");CFG.homeLabel=String(c.home.label||"Home");}document.title=CFG.title;},function(){});
   return cfg.then(function(){return get("courses/index.json");}).then(function(list){return Promise.all(list.map(function(f){return get("courses/"+f);}));}).then(function(cs){COURSES=cs.map(normCourse);});
 }
 function isTick(it){return it.def.mode==="tick";}
@@ -506,7 +510,7 @@ function viewPlan(){
 function route(){var h=(location.hash||"").replace("#","");return (h==="plan"||h==="timeline"||COURSES.some(function(c){return c.id===h;}))?h:"today";}
 function render(){
   var r=route(),tabs=[["today","Today"],["timeline","Timeline"]].concat(COURSES.map(function(c){return [c.id,c.code];}),[["plan","Plan"]]);
-  var h='<header class="top"><h1>'+esc(CFG.title)+'</h1><span class="save" id="save"></span></header><nav>'+tabs.map(function(t){return '<a href="#'+t[0]+'"'+(t[0]===r?' aria-current="page"':"")+'>'+esc(t[1])+'</a>';}).join("")+'</nav>';
+  var h='<header class="top"><div>'+(CFG.homeUrl?'<a class="home" href="'+esc(CFG.homeUrl)+'">← '+esc(CFG.homeLabel)+'</a>':"")+'<h1>'+esc(CFG.title)+'</h1></div><span class="save" id="save"></span></header><nav>'+tabs.map(function(t){return '<a href="#'+t[0]+'"'+(t[0]===r?' aria-current="page"':"")+'>'+esc(t[1])+'</a>';}).join("")+'</nav>';
   if(loadErr)h+='<p class="err">The course files did not load: '+esc(loadErr)+'. Check courses/index.json and the files it lists. Opening index.html straight from disk does not work; serve the folder over HTTP.</p>';
   else if(mode==="loading")h+='<p class="muted">Loading progress…</p>';
   else h+=r==="today"?viewToday():r==="timeline"?viewTimeline():r==="plan"?viewPlan():viewCourse(COURSES.filter(function(c){return c.id===r;})[0]);

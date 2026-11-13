@@ -5,7 +5,7 @@ You are working on Self-Study Tracker, a static site that tracks a person's prog
 ## Shape of the project
 
 - `index.html` is the entire app: styles, then one script. No build step, no framework, no dependencies, no network requests except the site's own JSON files and `api.github.com`.
-- `config.json` holds the site title and default pace.
+- `config.json` holds the site title, default pace, an optional home link and item types. `custom.css` holds the owner's theme.
 - `courses/index.json` lists course files; `courses/*.json` are the courses. The app has no course-specific code.
 - `state.json` is the owner's progress. The running app writes it through the GitHub contents API. You should almost never edit it.
 - `tests/smoke.js` loads the app against a stubbed DOM and a fake GitHub API. Run `node tests/smoke.js` after every change. It validates every course file in `courses/` and `examples/courses/`.
@@ -19,6 +19,8 @@ This copy may be updated later from an upstream template by overwriting `index.h
 1. **A course file or `config.json` change.** New course, new item type, different weights, different pace, different title. No code involved.
 2. **A small, generic code change** that would suit any user of the template. Tell the owner it is worth offering upstream as a pull request, and add a line to `CHANGELOG.md`.
 3. **A change specific to this owner.** Do it only if asked, keep it isolated, and tell the owner plainly that their copy now differs from the template and updates will need a manual merge.
+
+Styling is data too: colours, fonts and layout tweaks go in `custom.css`, and the title and home link go in `config.json`. Do not restyle by editing the `<style>` block in `index.html`.
 
 Never edit `index.html` to special-case one course. If a course does not fit, first check whether a custom item type covers it.
 

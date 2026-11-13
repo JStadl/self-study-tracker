@@ -2,6 +2,11 @@
 
 Code version is shown in the site footer. Course-file format version is the `schema` field.
 
+## 1.2.0
+
+- Theming without code edits: the page loads `custom.css` after its own styles. Add that file (it can be empty) when updating.
+- Optional link back to your own site: `"home": {"label", "url"}` in `config.json`.
+
 ## 1.1.1
 
 Security fix. Update if you run 1.1.0 or earlier.

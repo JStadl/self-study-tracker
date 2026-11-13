@@ -21,6 +21,8 @@ fs.readdirSync(path.join(root, "examples/courses")).filter(f => f.endsWith(".jso
 const names = Object.keys(files);
 
 /* static checks on each course file */
+console.log("Files");
+ok(fs.existsSync(path.join(root, "custom.css")) && /href="custom\.css"/.test(html), "custom.css exists and index.html loads it");
 console.log("Course files");
 const seenIds = {};
 names.forEach(f => {
